@@ -15,16 +15,26 @@ exports.up = function(knex) {
       table.uuid('publicId').defaultTo(knex.fn.uuid())
       table.string('title').notNullable()
     })
+    .createTable('images', (table)=>{
+      table.increments('id')
+      table.string('filename')
+      table.string('path')
+    })
+
     .createTable('products', (table)=>{
       table.increments('id')
+      
       table.uuid('publicId').defaultTo(knex.fn.uuid())
       table.string('title').notNullable()
       table.string('subtitle').notNullable()
       table.string('content').notNullable()
-      table.string('price').notNullable()
-      table.boolean('isInStock').notNullable()
+      table.float('price', 2).notNullable()
+      table.string('currency').defaultTo('USD')
+      table.boolean('isInStock').defaultTo(true)
 
       table.integer('universe_id').references('id').inTable('universe')
+      
+      table.integer('image_id').references('id').inTable('images')
     
       table.timestamps(true, true)
 
@@ -47,6 +57,11 @@ exports.up = function(knex) {
    * @returns { Promise<void> }
    */
   exports.down = function(knex) {
-    return knex.schema.dropTableIfExists('products').dropTableIfExists('universe').dropTableIfExists('tag')
+    return knex.schema
+    .dropTableIfExists('tag_product')
+    .dropTableIfExists('tags')
+    .dropTableIfExists('products')
+    .dropTableIfExists('universe')
+    .dropTableIfExists('images')
   };
   

@@ -10,16 +10,20 @@ class ProductQueryConstructor{
         this.tags = Tag.query()
         this.universe = Universe.query()
         this.product = Product.query()
-        .select('publicId', 'title', 'subtitle', 'content', 'price', 'isInStock') 
+        .select('publicId', 'title', 'subtitle', 'content', 'price', 'isInStock', 'currency') 
         .withGraphFetched('universe(universeSelectOptions)')
         .withGraphFetched('tags(tagsSelectOptions)')
+        .withGraphFetched('images(imagesSelectOptions)')
         .modifiers(
             {
                 universeSelectOptions(builder) {
-                        builder.select('publicId', 'title', 'content');
-                    },
+                    builder.select('publicId', 'title', 'content');
+                },
                 tagsSelectOptions(builder){
                     builder.select('publicId', 'title');
+                },
+                imagesSelectOptions(builder){
+                    builder.select('filename', 'path')
                 }
             }
             
@@ -46,6 +50,26 @@ class ProductQueryConstructor{
         return this 
     }
 
+    orderBy(state){
+        switch(state){
+            case 'high price':
+                this.product = this.product.orderBy('price', 'desc')
+                break
+            case 'low price':
+                this.product = this.product.orderBy('price', 'asc')
+                break
+            case 'name':
+                this.product = this.product.orderBy('title', 'asc')
+                break
+            case 'date':
+                this.product = this.product.orderBy('updated_at', 'desc')
+                break
+            
+        }
+        
+        return this
+    }
+
 
     isInStock(inStock){
         this.product = this.product.where('isInStock', '=', inStock)
@@ -54,7 +78,10 @@ class ProductQueryConstructor{
     }
 
     price(min, max){
-        
+        this.product = this.product
+        .where('price', '>', min)
+        .where('price', '<', max)
+        return this
     }
 
     productPublicId(productPublicId){

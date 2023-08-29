@@ -45,6 +45,23 @@ exports.seed = async function (knex) {
     }
   ])
 
+
+  await knex("images").insert([
+    
+    {
+      filename: 'fs',
+      path : 'fs.webp'
+    },
+    {
+      filename:'coh',
+      path: 'coh.jpg'
+    },
+    {
+      filename : 'undaunted',
+      path: 'undaunted.jpg'
+    }
+  ])
+
   await knex("products").insert([
     {
       title: "product",
@@ -52,7 +69,28 @@ exports.seed = async function (knex) {
       content : "long description long description long description long description",
       price : '20.99',
       isInStock : true,
-      universe_id : 1
+      universe_id : 1,
+      image_id : 1
+
+    },
+    {
+      title: "expensive product",
+      subtitle: "some",
+      content : "long description long description long description long description",
+      price : '129.99',
+      isInStock : true,
+      universe_id : 1,
+      image_id : 2
+
+    },
+    {
+      title: "one more expensive product",
+      subtitle: "some",
+      content : "long description long description long description long description",
+      price : '299.99',
+      isInStock : true,
+      universe_id : 1,
+      image_id : 3
 
     },
     {

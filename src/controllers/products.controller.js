@@ -5,16 +5,24 @@ const {generateQueryParams} = require('../utils/productQueryGenerator.util')
 
 module.exports = {
     getProducts : async (req, res) =>{
-        let {offset, inStock, universe_pid, tags} = generateQueryParams(req.body)
+        let {offset, inStock, universe, tags, price, orderBy} = generateQueryParams(req.body)
         let products = new ProductQueryConstructor(Product, Universe).isInStock(inStock).offset(offset)
 
-
-        if(universe_pid){
-            products.universePublicId(universe_pid)
+        //store and serve images 
+        if(universe){
+            products.universePublicId(universe)
         }
         if(tags){
             products.tagPublicId(tags)
         }
+        if(price){
+            products.price(price.min, price.max)
+        }
+        if(orderBy){
+            products.orderBy(orderBy)
+        }
+
+
         products = await products.execute()
         
         res.json({

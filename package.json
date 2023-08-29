@@ -6,21 +6,27 @@
   "scripts": {
     "start": "./src/index.js",
     "start:dev": "nodemon ./src/index.js",
-    "migrate" : "npx knex migrate:latest --knexfile ./src/db/knexfile.js",
-    "make-seed" : "npx knex seed:make dev --knexfile ./src/db/knexfile.js",
-    "seed" : "npx knex seed:run --knexfile ./src/db/knexfile.js",
-    "drop" : "npx knex migrate:down --knexfile ./src/db/knexfile.js"
+    "migrate": "npx knex migrate:latest --knexfile ./src/db/knexfile.js",
+    "seed": "npx knex seed:run --knexfile ./src/db/knexfile.js",
+    "drop": "npx knex migrate:down --knexfile ./src/db/knexfile.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "express-session": "^1.17.3",
     "knex": "^2.5.1",
+    "multer": "^1.4.5-lts.1",
     "nodemon": "^3.0.1",
     "objection": "^3.1.1",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
     "pg": "^8.11.2"
   }
 }

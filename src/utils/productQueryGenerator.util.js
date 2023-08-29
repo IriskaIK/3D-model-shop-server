@@ -1,6 +1,6 @@
 module.exports = {
     generateQueryParams : (query)=>{
-        let {offset, inStock, universe, tags} = query
+        let {offset, inStock, universe, tags, price, orderBy} = query
         let universe_pid = universe
         if(!offset){
             offset = 0
@@ -14,6 +14,12 @@ module.exports = {
         if(!tags){
             tags = null
         }
-        return {offset, inStock, universe_pid, tags}
+        if(!price){
+            price = {min:1, max:30000}
+        }
+        if(!orderBy){
+            orderBy = null
+        }
+        return {offset, inStock, universe_pid, tags, price, orderBy}
     }
 }
