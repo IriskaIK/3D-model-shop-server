@@ -20,11 +20,7 @@ router.post('/login', (req, res, next) => {
                 return next(err);
             }
 
-            return res.status(200).json({ msg: 'Authentication successful', user:{
-                first_name : user.first_name,
-                phone : user.phone,
-                email : user.email,
-              } });
+            return res.status(200).json({ msg: 'Authentication successful'});
         });
 
     })(req, res, next);
@@ -33,4 +29,8 @@ router.post('/login', (req, res, next) => {
 
 router.post('/register', authController.regUser)
 
+
+router.get('/', (req, res)=>{
+    console.log(req.user)
+})
 module.exports = router;

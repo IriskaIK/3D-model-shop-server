@@ -34,12 +34,7 @@ module.exports = {
         }
         res.status(201);
         console.log(newUser)
-        res.send({ msg: "Created", user:{
-          first_name : newUser.first_name,
-          last_name : newUser.last_name,
-          phone : newUser.phone,
-          email : newUser.email,
-        } });
+        res.send({ msg: "Created"});
       });
     }
   },

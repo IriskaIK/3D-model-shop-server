@@ -6,12 +6,11 @@ const validateDelivery = require("../utils/validators/deliveryValidator");
 module.exports = {
 
     getUserAccountDetails : async (req, res) => {
-
         const user = await User.query()
             .findById(req.user.id)
             .select('email', 'first_name', 'last_name', 'phone')
             .withGraphFetched('avatar(avatarSelectOptions)')
-            .withGraphFetched('shipping_adress(addressSelectOptions)')
+            .withGraphFetched('shipping_address(addressSelectOptions)')
             .modifiers(
                 {
                     avatarSelectOptions(builder) {
