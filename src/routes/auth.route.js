@@ -31,6 +31,10 @@ router.post('/register', authController.regUser)
 
 
 router.get('/', (req, res)=>{
-    console.log(req.user)
+    if(req.user){
+        res.status(200).json({msg: 'Authenticated'})
+    }else{
+        res.status(401).json({msg : 'Not Authenticated'})
+    }
 })
 module.exports = router;

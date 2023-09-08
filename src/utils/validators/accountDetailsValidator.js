@@ -1,6 +1,6 @@
 function isValidPhoneNumber(phone) {
     // Check if the phone number has the prefix +38
-    return /^\+38\d{10}$/.test(phone);
+    return /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/.test(phone);
   }
 
 function validateAccountDetails(payload){

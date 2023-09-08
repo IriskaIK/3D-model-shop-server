@@ -7,20 +7,7 @@ exports.seed = async function (knex) {
   await knex.raw('TRUNCATE TABLE "products" CASCADE');
 
   // Deletes ALL existing entries
-  await knex("users").insert([
-    {
-      first_name: "SomeName",
-      last_name : "LastName",
-      email : "qwerty@gmail.com",
-      phone : "+380502047396"
-    },
-    { 
-    first_name: "Second",
-    last_name : "Person",
-    email : "oleg@gmail.com",
-    phone : "+380609058202"
-    },
-  ]);
+  
 
   await knex('universe').insert([
     {

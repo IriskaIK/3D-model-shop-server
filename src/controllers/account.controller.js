@@ -86,6 +86,7 @@ module.exports = {
         await shippingAddress.$query().patchAndFetch(addressData.values)
 
         delete shippingAddress.id
+        res.status(200)
         res.send(shippingAddress)
 
         
