@@ -4,6 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
 const passport = require('passport')
+const MongoStore = require('connect-mongo')
 const cors = require("cors");
 require('./auth/strategies/local')
 
@@ -26,6 +27,9 @@ app.use(session({
     secret: config.session_secret,
     resave : false,
     saveUninitialized : false,
+    store : MongoStore.create({
+        mongoUrl: 'mongodb://127.0.0.1:27017/someTestDB'
+    })
 }))
 app.use(
     bodyParser.urlencoded({

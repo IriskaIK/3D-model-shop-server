@@ -37,4 +37,15 @@ router.get('/', (req, res)=>{
         res.status(401).json({msg : 'Not Authenticated'})
     }
 })
+
+
+router.post('/logout', function(req, res, next){
+  req.logout(function(err) {
+    if (err){ 
+        res.status(400).json({msg: 'something went wrong'}) 
+    }
+    res.status(200).json({msg : 'success'});
+  });
+  
+});
 module.exports = router;
