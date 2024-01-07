@@ -51,7 +51,7 @@ class ProductQueryConstructor{
     }
 
     orderBy(state){
-        switch(state){
+        switch(state.toLowerCase()){
             case 'high price':
                 this.product = this.product.orderBy('price', 'desc')
                 break
@@ -151,6 +151,7 @@ class ProductQueryConstructor{
     }
 
     async _getProductsByUniverse(){
+
         const universe = await this.universe
             .select('id')
             .where((builder) =>

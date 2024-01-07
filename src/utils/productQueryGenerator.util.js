@@ -5,7 +5,7 @@ module.exports = {
         if(!offset){
             offset = 0
         }
-        if(inStock == undefined){
+        if(inStock === undefined){
             inStock = true
         }
         if(!universe_pid){

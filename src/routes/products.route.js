@@ -3,8 +3,13 @@ const router = express.Router();
 const productsController = require('../controllers/products.controller');
 
 
-router.get('/', productsController.getProducts);
+router.post('/', productsController.getProducts);
 
-router.get('/product/:id', productsController.getProductByID)
+router.post('/product/:id', productsController.getProductByID)
+
+router.get('/tags', productsController.getTags)
+
+router.get('/universes', productsController.getUniverses)
+
 
 module.exports = router;
