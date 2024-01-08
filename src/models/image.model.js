@@ -1,5 +1,6 @@
 const { Model } = require("objection");
 const User = require("./user.model");
+const Product = require("./product.model");
 
 class Image extends Model {
   static get tableName() {
@@ -16,6 +17,19 @@ class Image extends Model {
           to: "users.image_id",
         },
       },
+      product : {
+        relation : Model.ManyToManyRelation,
+        modelClass : Product,
+        join : {
+          from : 'images.id',
+          through : {
+            from : 'image_product.image_id',
+            to : 'image_product.product_id'
+
+          },
+          to: 'products.id'
+        }
+      }
     };
   }
 }

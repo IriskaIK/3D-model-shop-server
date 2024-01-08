@@ -12,6 +12,7 @@ const productsRoutes = require('./routes/products.route');
 const accountRoutes = require('./routes/account.route')
 const authRotes = require('./routes/auth.route')
 
+
 const config = require('./configs/constants.config');
 const setupDB = require('./db/db-setup')
 setupDB()

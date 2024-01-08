@@ -38,8 +38,6 @@ class ProductQueryConstructor{
 
         this._tags_pid = null
 
-        this.product
-
 
         
     }

@@ -61,6 +61,13 @@ module.exports = {
     getUniverses : async (req, res) =>{
         const universes = await Universe.query()
             .select('publicId', 'title', 'content')
+            .withGraphFetched('images(imagesSelectOptions)')
+            .modifiers({
+                    imagesSelectOptions(builder){
+                        builder.select('filename', 'path')
+                    }
+                }
+            )
         res.send(universes)
     }
 }

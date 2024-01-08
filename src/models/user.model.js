@@ -8,6 +8,7 @@ class User extends Model{
     static get relationMappings(){
 
         const Image = require('./image.model')
+        const Product = require('./product.model')
         const ShippingAddress = require('./shippingAddress.model')
         return { 
             avatar : {
@@ -24,6 +25,30 @@ class User extends Model{
                 join:{
                     from: 'users.shippingAddress_id',
                     to : 'shippingAddress.id'
+                }
+            },
+            wishlist : {
+                relation : Model.ManyToManyRelation,
+                modelClass : Product,
+                join : {
+                    from : 'users.id',
+                    through : {
+                        from : 'wishlist.user_id',
+                        to : 'wishlist.product_id'
+                    },
+                    to : 'products.id'
+                }
+            },
+            cart : {
+                relation : Model.ManyToManyRelation,
+                modelClass : Product,
+                join : {
+                    from : 'users.id',
+                    through : {
+                        from : 'cart.user_id',
+                        to : 'cart.product_id'
+                    },
+                    to : 'products.id'
                 }
             }
         }
