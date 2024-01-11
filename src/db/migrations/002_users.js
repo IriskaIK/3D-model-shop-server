@@ -30,12 +30,7 @@ exports.up = function(knex) {
           table.integer('product_id').references('id').inTable('products')
           table.integer('user_id').references('id').inTable('users')
         })
-        // .createTable('orders', (table)=>{
-        //   table.increments('id')
-        //   table.integer('product_id').references('id').inTable('products')
-        //   table.integer('user_id').references('id').inTable('users')
-        //   table.timestamps(true, true)
-        // })
+
         .createTable('cart', (table)=>{
             table.increments('id')
             table.integer('product_id').references('id').inTable('products')

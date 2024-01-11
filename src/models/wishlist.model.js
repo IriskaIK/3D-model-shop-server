@@ -1,9 +1,9 @@
 const { Model } = require('objection');
 
-class Cart extends Model {
+class Wishlist extends Model {
     static get tableName() {
         return 'wishlist';
     }
 }
 
-module.exports = Cart;
+module.exports = Wishlist;

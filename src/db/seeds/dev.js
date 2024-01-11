@@ -88,26 +88,7 @@ exports.seed = async function (knex) {
 
 
     },
-    {
-      title: "product",
-      subtitle: "some",
-      content : "long description long description long description long description",
-      price : 20.99,
-      isInStock : true,
-      universe_id : 2,
 
-
-    },
-    {
-      title: "product",
-      subtitle: "some",
-      content : "long description long description long description long description",
-      price : 20.99,
-      isInStock : true,
-      universe_id : 3,
-
-
-    },
 
 
   ])

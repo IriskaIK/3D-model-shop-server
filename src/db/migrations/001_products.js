@@ -5,21 +5,24 @@
 exports.up = function(knex) {
     return knex.schema
         .createTable('images', (table)=>{
-          table.increments('id')
-          table.string('filename')
-          table.string('path')
+            table.increments('id')
+            table.string('filename')
+            table.string('path')
+            table.timestamps(true, true)
         })
         .createTable('universe', (table)=>{
-          table.increments('id')
-          table.uuid('publicId').defaultTo(knex.fn.uuid())
-          table.string('title').notNullable()
-          table.string('content').notNullable()
-          table.integer('image_id').references('id').inTable('images')
+            table.increments('id')
+            table.uuid('publicId').defaultTo(knex.fn.uuid())
+            table.string('title').notNullable()
+            table.string('content').notNullable()
+            table.integer('image_id').references('id').inTable('images')
+            table.timestamps(true, true)
         })
         .createTable('tags', (table)=>{
-          table.increments('id')
-          table.uuid('publicId').defaultTo(knex.fn.uuid())
-          table.string('title').notNullable()
+            table.increments('id')
+            table.uuid('publicId').defaultTo(knex.fn.uuid())
+            table.string('title').notNullable()
+            table.timestamps(true, true)
         })
         .createTable('products', (table)=>{
           table.increments('id')
@@ -34,13 +37,10 @@ exports.up = function(knex) {
 
           table.integer('universe_id').references('id').inTable('universe')
 
-          // table.integer('image_id').references('id').inTable('images')
-
           table.timestamps(true, true)
 
 
         })
-
 
 
         .createTable('tag_product', (table)=>{
