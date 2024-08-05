@@ -66,7 +66,6 @@ export async function updateAccountDetails(req: Request<{}, {}, IAccountDetailsR
 
 
 export async function updateDeliveryDetails(req: Request<{}, {}, IDeliveryDetailsRequestBody>, res: Response, next : NextFunction): Promise<void> {
-    // TODO: validate body data
     if (req.user){
         try {
             const user = await User.query().findById(req.user.id)

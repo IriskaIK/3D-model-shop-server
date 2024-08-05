@@ -1,31 +1,41 @@
-import { Model, RelationMappings } from 'objection';
-import Image from './image.model'; // Assuming correct path for Image model
-import Product from './product.model'; // Assuming correct path for Product model
+import {Model, RelationMappings} from 'objection';
+import Image from './image.model';
+import Product from './product.model';
 import ShippingAddress from './shippingAddress.model';
-import Cart from "./cart.model";
-import Wishlist from "./wishlist.model"; // Assuming correct path for ShippingAddress model
+import bcrypt from "bcryptjs";
+import {User as IUser} from '../types/AuthenticatedUser'
 
 
 interface User {
     id: number;
     shippingAddress_id: number;
+    image_id: number;
     first_name: string;
     last_name: string;
+
     email: string;
     password: string;
     phone: string;
-    image_id : number;
-    createdAt: string;
-    updatedAt: string;
-    shipping_address : ShippingAddress;
-    avatar : Image;
-    cart : Product[];
-    wishlist : Product[];
+    created_at: string;
+    updated_at: string;
+    shipping_address: ShippingAddress;
+    avatar: Image;
+    cart: Product[];
+    wishlist: Product[];
 }
 
-class User extends Model implements User{
+class User extends Model implements IUser {
+    type: 'user' = 'user';
     static get tableName(): string {
         return 'users';
+    }
+
+    async $beforeInsert() {
+        this.password = await bcrypt.hash(this.password, 10);
+    }
+
+    verifyPassword(password: string) {
+        return bcrypt.compare(password, this.password);
     }
 
     static get relationMappings(): RelationMappings {

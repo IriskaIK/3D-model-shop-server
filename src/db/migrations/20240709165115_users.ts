@@ -17,6 +17,7 @@ export async function up(knex : Knex): Promise<void> {
         table.integer('shippingAddress_id').references('id').inTable('shippingAddress')
         table.integer('image_id').references('id').inTable('images')
 
+        table.string('type')
         table.timestamps(true, true)
     })
     await knex.schema.createTable('wishlist', (table) => {
@@ -35,7 +36,6 @@ export async function up(knex : Knex): Promise<void> {
 export async function down(knex: Knex) : Promise<void> {
     await knex.schema.dropTable('wishlist');
     await knex.schema.dropTable('cart');
-    await knex.schema.dropTable('orders');
     await knex.schema.dropTable('users');
     await knex.schema.dropTable('shippingAddress');
 }

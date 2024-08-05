@@ -1,36 +1,21 @@
 import {NextFunction, Response, Request} from "express";
 import {IManyProductsRequestBody, IProductsRequestParam} from "../types/products/request.types";
 import {IManyProductsResponse} from "../types/products/response.types";
-import {ProductQueryBuilder} from "../services/productQueryBuilder.service";
 import Category from "../models/category.model";
 import Product from "../models/product.model";
 import Tag from "../models/tag.model";
+import {ProductsQueryBuilderService} from "../services/queryBuilder/productsQueryBuilder.service";
 
 
 
 export async function getProducts(req : Request<{}, {}, IManyProductsRequestBody>, res : Response<IManyProductsResponse>, next: NextFunction){
     let {
         offset,
-        inStock,
-        price,
-        orderBy,
-        category,
-        tags
     } = req.body
-    const products = new ProductQueryBuilder({Product, Category})
+    if(!offset) offset = 0
+    const products = new ProductsQueryBuilderService(req.body)
 
     try {
-        if(offset) {
-            products.offset(offset)
-        }else{
-            offset = 0;
-        }
-        if(inStock) products.isInStock(inStock)
-        if(price) products.price(price.min, price.max)
-        if(orderBy) products.orderBy(orderBy)
-        if(category) products.categoriesPublicIds(category)
-        if(tags) products.tagsPublicIds(tags)
-
         res.json({
             products : await products.getProducts(),
             offset : offset+20
@@ -41,9 +26,9 @@ export async function getProducts(req : Request<{}, {}, IManyProductsRequestBody
 }
 export async function getProductByID(req : Request<IProductsRequestParam>, res : Response<Product>, next: NextFunction){
     const {id} = req.params
-    const product = new ProductQueryBuilder({Product, Category})
+    const products = new ProductsQueryBuilderService({})
     try{
-        res.send(await product.getProductByPublicId(id))
+        res.send(await products.getProductByPublicId(id))
     }catch (e){
         next(e)
     }

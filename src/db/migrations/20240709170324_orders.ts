@@ -18,7 +18,7 @@ export async function up(knex : Knex): Promise<void> {
     })
     await knex.schema.createTable('product_snapshot', (table) => {
         table.increments('id')
-        table.uuid('publicId').defaultTo(knex.fn.uuid())
+        table.uuid('publicId').defaultTo(knex.fn.uuid()) // TODO: change to slug
         table.string('title')
         table.string('subtitle')
         table.float('price', 2).notNullable()
@@ -34,9 +34,9 @@ export async function up(knex : Knex): Promise<void> {
 }
 
 export async function down(knex: Knex) : Promise<void> {
-    await knex.schema.dropTable('wishlist');
-    await knex.schema.dropTable('cart');
+
+    await knex.schema.dropTable('order_items');
+    await knex.schema.dropTable('product_snapshot');
     await knex.schema.dropTable('orders');
-    await knex.schema.dropTable('users');
-    await knex.schema.dropTable('shippingAddress');
+    await knex.schema.dropTable('recipient');
 }

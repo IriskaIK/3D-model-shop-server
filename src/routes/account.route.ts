@@ -20,21 +20,22 @@ import {
     removeProductFromWishlist
 } from "../controllers/wishlist.controller";
 import {createOrder, getOrders} from "../controllers/orders.controller";
+import {validateProductQuantity} from "../utils/validators/productQuantityValidator.util";
+import {validateOrder} from "../utils/validators/orderValidator.util";
 
 const router: Router = express.Router();
 
-router.use(isAuthenticated)
+router.use(isAuthenticated('user'))
 
 router.get('/', getUserAccountDetails)
 router.put('/', validateAccountDetails, updateAccountDetails)
 
 router.get('/delivery', getDeliveryDetails)
-router.put('/delivery', validateDeliveryDetails,updateDeliveryDetails)
+router.put('/delivery', validateDeliveryDetails, updateDeliveryDetails)
 
 
 router.get('/cart/add/:id', addProductToCart)
-// TODO: add body validation
-router.put('/cart', updateProductInCart)
+router.put('/cart', validateProductQuantity, updateProductInCart)
 router.get('/cart/:id', getQuantityOfProductInCart)
 router.get('/cart', getProductsInCart)
 router.delete('/cart/:id', removeProductFromCart)
@@ -43,8 +44,7 @@ router.get('/wishlist/:id', addProductToWishList)
 router.get('/wishlist', getProductsInWishlist)
 router.delete('/wishlist/:id', removeProductFromWishlist)
 
-// TODO: add body validation
-router.post('/orders', createOrder)
+router.post('/orders', validateOrder ,createOrder)
 router.get('/orders', getOrders)
 
 export default router;

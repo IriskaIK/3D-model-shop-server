@@ -4,7 +4,8 @@ import passport from 'passport'
 declare global {
     namespace Express {
         interface User extends MyUser {
-            id : number
+            id : number,
+            type : string
         }
     }
 }

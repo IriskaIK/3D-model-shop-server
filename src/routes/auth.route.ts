@@ -4,12 +4,9 @@ import isAuthenticated from "../middleware/isAuthenticated.middleware";
 
 const router: Router = express.Router();
 
-router.get('/',  isAuthenticated, (req, res)=>{
+router.get('/',  isAuthenticated('user'), (req : Request, res : Response)=>{
     res.status(200).json({ msg: 'Authenticated' });
 })
-
-
-
 
 
 router.post('/login', logInHandler);

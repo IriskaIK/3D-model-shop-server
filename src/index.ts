@@ -15,6 +15,7 @@ import productsRoutes from './routes/products.route';
 import accountRoutes from './routes/account.route';
 import authRotes from './routes/auth.route';
 import {errorHandler} from "./middleware/errorHandler.middleware";
+import usersRoute from "./routes/admin/users.route";
 
 setupDB()
 
@@ -52,6 +53,8 @@ app.use('/uploads', express.static(path.join(__dirname, './static/images')));
 app.use('/api/auth', authRotes)
 app.use('/api/products', productsRoutes)
 app.use('/api/account', accountRoutes)
+
+app.use('/api/admin/users', usersRoute)
 
 
 app.get('/', (req, res) => {

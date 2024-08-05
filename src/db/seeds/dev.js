@@ -9,6 +9,25 @@ exports.seed = async function (knex) {
   // Deletes ALL existing entries
 
 
+  await knex('roles').insert([
+    {
+      role: 'admin',
+      right_to_edit : true,
+      right_to_delete: true,
+      right_to_create : true,
+      superuser : true
+    }
+  ])
+
+  await knex('admins').insert([
+    {
+      first_name : 'Administrator',
+      last_name : 'Administrator',
+      email : 'admin@administrator.com',
+      password: 'admin',
+      role_id : 1,
+    }
+  ])
 
 
   await knex("images").insert([
