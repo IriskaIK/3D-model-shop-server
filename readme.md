@@ -92,9 +92,9 @@ Request
 
 | Body parameter | Type     | Description   |
 |:---------------|:---------|:--------------|
-| `first_name`   | `string` | **Required**. |
-| `last_name`    | `string` | **Required**. |
-| `phone`        | `string` | **Required**. |
+| `firstName`   | `string` | **Required**. |
+| `lastName`    | `string` | **Required**. |
+| `phoneNumber`        | `string` | **Required**. |
 | `email`        | `string` | **Required**. |
 
 Response
