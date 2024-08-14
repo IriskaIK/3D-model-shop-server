@@ -11,7 +11,7 @@ export async function up(knex : Knex): Promise<void> {
     await knex.schema.createTable('orders', (table) => {
         table.increments('id')
         table.string('status')
-        table.integer('user_id').references('id').inTable('users')
+        table.integer('user_id').references('id').inTable('users').onDelete('CASCADE')
         table.integer('shipping_address_id').references('id').inTable('shippingAddress')
         table.integer('recipient_id').references('id').inTable('recipient')
         table.timestamps(true, true)

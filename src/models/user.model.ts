@@ -4,6 +4,7 @@ import Product from './product.model';
 import ShippingAddress from './shippingAddress.model';
 import bcrypt from "bcryptjs";
 import {User as IUser} from '../types/AuthenticatedUser'
+import Order from "./order.model";
 
 
 interface User {
@@ -78,6 +79,14 @@ class User extends Model implements IUser {
                         to: 'cart.product_id'
                     },
                     to: 'products.id'
+                }
+            },
+            orders: {
+                relation: Model.HasManyRelation,
+                modelClass: Order,
+                join: {
+                    from: 'users.id',
+                    to: 'orders.user_id'
                 }
             }
         };

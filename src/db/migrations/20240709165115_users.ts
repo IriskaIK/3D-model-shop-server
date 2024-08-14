@@ -23,12 +23,12 @@ export async function up(knex : Knex): Promise<void> {
     await knex.schema.createTable('wishlist', (table) => {
         table.increments('id')
         table.integer('product_id').references('id').inTable('products')
-        table.integer('user_id').references('id').inTable('users')
+        table.integer('user_id').references('id').inTable('users').onDelete('CASCADE')
     })
     await knex.schema.createTable('cart', (table) => {
         table.increments('id')
         table.integer('product_id').references('id').inTable('products')
-        table.integer('user_id').references('id').inTable('users')
+        table.integer('user_id').references('id').inTable('users').onDelete('CASCADE')
         table.integer('quantity')
     })
 }

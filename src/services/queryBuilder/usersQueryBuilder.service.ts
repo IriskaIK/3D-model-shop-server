@@ -62,12 +62,13 @@ export class UserQueryBuilder extends QueryBuilderBase<User> {
         }
     }
 
-    async getProductById(id: number){
+    async getUserById(id: number){
         try {
             return await this.query.findOne('id', "=", id)
                 .withGraphFetched('shipping_address')
                 .withGraphFetched('wishlist')
-                .withGraphFetched('cart');
+                .withGraphFetched('cart')
+                .withGraphFetched('orders');
         } catch (error) {
             throw new Error("Error fetching user");
         }
