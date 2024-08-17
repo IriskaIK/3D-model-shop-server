@@ -16,7 +16,8 @@ import accountRoutes from './routes/account.route';
 import authRotes from './routes/auth.route';
 import {errorHandler} from "./middleware/errorHandler.middleware";
 import usersRoute from "./routes/admin/users.route";
-
+import ordersRoute from "routes/admin/orders.route";
+import productsRoute from "routes/admin/products.route";
 setupDB()
 
 const app = express()
@@ -53,9 +54,9 @@ app.use('/uploads', express.static(path.join(__dirname, './static/images')));
 app.use('/api/auth', authRotes)
 app.use('/api/products', productsRoutes)
 app.use('/api/account', accountRoutes)
-
+app.use('/api/admin/orders', ordersRoute)
 app.use('/api/admin/users', usersRoute)
-
+app.use('/api/admin/products', productsRoute)
 
 app.get('/', (req, res) => {
     res.send({'message': 'ok'})
@@ -63,7 +64,7 @@ app.get('/', (req, res) => {
 
 
 
-app.use(errorHandler)
+// app.use(errorHandler)
 
 app.listen(credentials.port, () => {
     console.log(`listening of port: ${credentials.port}`)

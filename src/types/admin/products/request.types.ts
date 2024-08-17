@@ -1,4 +1,6 @@
-export interface IManyProductsRequestBody {
+import {OrderByType} from "@/types/products/request.types";
+
+export interface IManyProductsRequest {
     offset?: number | undefined;
     inStock? : boolean | undefined;
     category? : number[] | undefined;
@@ -8,10 +10,12 @@ export interface IManyProductsRequestBody {
         max : number;
     };
     orderBy? : OrderByType;
-}
-export interface IProductsRequestParam{
-    id: number;
+    title? : string | undefined;
 }
 
+export interface IProductRequestParam{
+    id : number;
+}
+export interface IProductEditRequestBody{
 
-export type OrderByType = "high price" | "low price" | "name" | "date";
+}

@@ -1,12 +1,16 @@
-import { Request, Response, NextFunction } from 'express';
-import {CustomError} from "../types/customError.types";
-export function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
-    if (err instanceof CustomError) {
-        const serializedErrors = err.serializeErrors();
-        return res.status(err.statusCode).json({ errors: serializedErrors });
+import {Request, Response, NextFunction} from 'express';
+import {NotFoundError, ValidationError, DatabaseError, AuthorizationError} from '@/types/customError.types'; // Import the error classes
+
+export async function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
+    if (res.headersSent) {
+        return next(err);
     }
 
-    console.error(err);
-    console.log("Error handled by middleware");
-    res.status(500).json({ errors: [{ message: err.message }] });
+    if (err instanceof NotFoundError || err instanceof ValidationError || err instanceof DatabaseError || err instanceof AuthorizationError) {
+        res.status(err.status).json({error: err.message});
+    } else {
+        res.status(500).json({error: 'An unexpected error occurred.'});
+    }
 }
+
+export default errorHandler;

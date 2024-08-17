@@ -203,7 +203,6 @@ Response[]
 
 ```ts
 interface Response {
-    publicId: string;
     title: string;
     subtitle: string;
     content: string;
@@ -252,7 +251,6 @@ Response[]
 
 ```ts
 interface Response {
-    publicId: string;
     title: string;
     subtitle: string;
     content: string;
@@ -371,7 +369,6 @@ Response
 
 ```ts
 interface Response {
-    publicId: string;
     title: string;
     subtitle: string;
     content: string;
@@ -394,7 +391,6 @@ Response[]
 
 ```ts
 interface Response {
-    publicId: string;
     title: string;
 }
 ```
@@ -407,7 +403,6 @@ interface Response {
 Response[]
 ```ts
 interface Response {
-    publicId: string;
     title: string;
     content: string;
     images: Image;

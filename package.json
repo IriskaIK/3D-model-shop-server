@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon src/index.ts",
-    "build": "tsc",
+    "build": "npx tsc && tsc-alias",
     "migrate": "npx knex migrate:latest --knexfile ./src/db/knexfile.ts",
     "seed": "npx knex seed:run --knexfile ./src/db/knexfile.ts",
     "drop": "npx knex migrate:down --knexfile ./src/db/knexfile.ts"
@@ -28,7 +28,8 @@
     "objection": "^3.1.4",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
-    "pg": "^8.12.0"
+    "pg": "^8.12.0",
+    "slugify": "^1.6.6"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -41,6 +42,8 @@
     "@types/passport-local": "^1.0.38",
     "nodemon": "^3.1.4",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.10",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.5.3"
   }
 }

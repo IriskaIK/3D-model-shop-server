@@ -18,7 +18,6 @@ export async function up(knex : Knex): Promise<void> {
     })
     await knex.schema.createTable('product_snapshot', (table) => {
         table.increments('id')
-        table.uuid('publicId').defaultTo(knex.fn.uuid()) // TODO: change to slug
         table.string('title')
         table.string('subtitle')
         table.float('price', 2).notNullable()

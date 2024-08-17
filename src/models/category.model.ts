@@ -4,7 +4,6 @@ import Tag from './tag.model';
 
 interface Category{
     id: number;
-    publicId: string;
     title : string;
     content : string;
     image_id : number;

@@ -1,36 +1,40 @@
 import {Request, Response, NextFunction} from 'express';
 import ShippingAddress from "../models/shippingAddress.model";
 import User from "../models/user.model";
-import {IAccountDetailsRequestBody, IDeliveryDetailsRequestBody} from "../types/account/request.types";
+import {IAccountDetailsRequestBody, IDeliveryDetailsRequestBody} from "@/types/account/request.types";
+import {AuthorizationError, DatabaseError, NotFoundError} from "@/types/customError.types";
 
 export async function getUserAccountDetails(req: Request, res: Response<User>, next: NextFunction) {
-    if (req.user) try {
-        const user = await User.query()
-            .findById(req.user.id)
-            .select('email', 'first_name', 'last_name', 'phone')
-            .withGraphFetched('[avatar(avatarSelectOptions), shipping_address(addressSelectOptions)]')
-            .modifiers({
-                avatarSelectOptions(builder) {
-                    builder.select('filename', 'path');
-                },
-                addressSelectOptions(builder) {
-                    builder.select('region', 'city', 'postOffice');
-                },
-            });
+    if (req.user) {
+        try {
+            const user = await User.query()
+                .findById(req.user.id)
+                .select('email', 'first_name', 'last_name', 'phone')
+                .withGraphFetched('[avatar(avatarSelectOptions), shipping_address(addressSelectOptions)]')
+                .modifiers({
+                    avatarSelectOptions(builder) {
+                        builder.select('filename', 'path');
+                    },
+                    addressSelectOptions(builder) {
+                        builder.select('region', 'city', 'postOffice');
+                    },
+                });
 
-        if (user) {
-            res.send(user);
-        } else {
-            res.redirect('/api/auth/login');
+            if (user) {
+                res.send(user);
+            } else {
+                next(new NotFoundError("User not found"));
+            }
+        } catch (error) {
+            next(new DatabaseError('DB Error: Error during fetching user data'))
         }
-    } catch (error) {
-        next(error)
+    } else {
+        next(new AuthorizationError("Not authorized"));
     }
 }
 
 
-
-export async function updateAccountDetails(req: Request<{}, {}, IAccountDetailsRequestBody>, res: Response<User>, next : NextFunction): Promise<void> {
+export async function updateAccountDetails(req: Request<{}, {}, IAccountDetailsRequestBody>, res: Response<User>, next: NextFunction): Promise<void> {
     if (req.user) {
         try {
             await User.query().patch({
@@ -54,19 +58,16 @@ export async function updateAccountDetails(req: Request<{}, {}, IAccountDetailsR
 
             res.status(200).send(user);
         } catch (error) {
-            next(error)
+            next(new DatabaseError('DB Error: Error during fetching user data'))
         }
     } else {
-        throw new Error('Invalid inputs')
+        next(new AuthorizationError("Not authorized"));
     }
 }
 
 
-
-
-
-export async function updateDeliveryDetails(req: Request<{}, {}, IDeliveryDetailsRequestBody>, res: Response, next : NextFunction): Promise<void> {
-    if (req.user){
+export async function updateDeliveryDetails(req: Request<{}, {}, IDeliveryDetailsRequestBody>, res: Response, next: NextFunction): Promise<void> {
+    if (req.user) {
         try {
             const user = await User.query().findById(req.user.id)
             if (user) {
@@ -74,26 +75,28 @@ export async function updateDeliveryDetails(req: Request<{}, {}, IDeliveryDetail
                     .findById(user.shippingAddress_id)
                 if (shippingAddress) {
                     await shippingAddress.$query().patchAndFetch({
-                        region : req.body.region,
-                        city : req.body.city,
-                        postOffice : req.body.postOffice,
+                        region: req.body.region,
+                        city: req.body.city,
+                        postOffice: req.body.postOffice,
                     })
                 }
+            } else {
+                next(new NotFoundError("User not found"));
             }
             res.status(200)
 
         } catch (error) {
-            next(error)
+            next(new DatabaseError('DB Error: Error during fetching user data'))
         }
-    }else{
-        throw new Error('Invalid inputs')
+    } else {
+        next(new AuthorizationError("Not authorized"));
     }
 
 
 }
 
-export async function getDeliveryDetails(req: Request, res : Response<ShippingAddress>, next : NextFunction) : Promise<void>{
-    if(req.user){
+export async function getDeliveryDetails(req: Request, res: Response<ShippingAddress>, next: NextFunction): Promise<void> {
+    if (req.user) {
         try {
             const user = await User.query().findById(req.user.id)
             if (user) {
@@ -102,11 +105,13 @@ export async function getDeliveryDetails(req: Request, res : Response<ShippingAd
                 if (shippingAddress) {
                     res.send(shippingAddress);
                 }
+            } else {
+                next(new NotFoundError("User not found"));
             }
-        }catch (error){
-            console.error(error);
-            next(Error)
+        } catch (error) {
+            next(new DatabaseError('DB Error: Error during fetching user data'))
         }
-
+    } else {
+        next(new AuthorizationError("Not authorized"));
     }
 }

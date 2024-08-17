@@ -1,10 +1,35 @@
-export abstract class CustomError extends Error {
-    abstract statusCode: number;
+export class NotFoundError extends Error {
+    status: number;
 
     constructor(message: string) {
         super(message);
-        Object.setPrototypeOf(this, CustomError.prototype);
+        this.status = 404;
     }
+}
 
-    abstract serializeErrors(): { message: string; field?: string }[];
+export class ValidationError extends Error {
+    status: number;
+
+    constructor(message: string) {
+        super(message);
+        this.status = 400;
+    }
+}
+
+export class DatabaseError extends Error {
+    status: number;
+
+    constructor(message: string) {
+        super(message);
+        this.status = 500;
+    }
+}
+
+export class AuthorizationError extends Error {
+    status: number;
+
+    constructor(message: string) {
+        super(message);
+        this.status = 401;
+    }
 }

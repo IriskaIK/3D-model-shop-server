@@ -3,7 +3,6 @@ import Product from './product.model'; // Assuming correct path for Product mode
 
 interface Tag {
     id: number;
-    publicId: string;
     title: string;
     created_at: string;
     updated_at: string;

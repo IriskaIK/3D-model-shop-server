@@ -51,17 +51,20 @@ export class QueryBuilderBase<T extends Model>{
     }
     protected applyFilters(): void {
         if (this._id !== undefined) {
+
             this.query = this.query.where('id', this._id);
         }
+
         this.query = this.query.offset(this._offset).limit(this._offsetLimit).orderBy(this._orderByColumn, this._orderByDirection);
     }
 
     async execute(): Promise<T[]> {
         this.applyFilters();
-        try {
-            return await this.query;
-        } catch (error) {
-            throw new Error("Error fetching data");
-        }
+        return await this.query;
+        // try {
+        //     return await this.query;
+        // } catch (error) {
+        //     throw new Error("Error fetching data");
+        // }
     }
 }

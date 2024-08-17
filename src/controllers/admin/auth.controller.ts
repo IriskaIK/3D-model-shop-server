@@ -1,7 +1,8 @@
 import Admin from "../../models/admin.model";
 import {Request, Response, NextFunction} from "express";
 import passport, {AuthenticateCallback} from "passport";
-import {handleErrorResponse, handleSuccessResponse} from "../../utils/responseUtils.util";
+import {handleSuccessResponse} from "@/utils/responseUtils.util";
+import {ValidationError, DatabaseError} from "@/types/customError.types";
 
 
 export async function adminLogInHandler(req: Request, res : Response, next: NextFunction) {
@@ -11,22 +12,22 @@ export async function adminLogInHandler(req: Request, res : Response, next: Next
         info : object | string | Array<string | undefined>) =>  {
 
         if (!user) {
-            return res.status(401).json({ msg: info });
+            return next(new ValidationError('User does not exist'));
         }
         req.logIn(user, (err) => {
             if (err) {
-                return next(err);
+                return next(new Error("Something went wrong"));
             }
-            return res.status(200).json({ msg: 'Authentication successful'});
+            return handleSuccessResponse(res, 200, 'Authentication successful');
         });
 
     })(req, res, next);
 }
 
-export const logOutHandler = (req: Request, res: Response) => {
+export const logOutHandler = (req: Request, res: Response, next : NextFunction) => {
     req.logout((err) => {
         if (err) {
-            return handleErrorResponse(res, 400, 'Something went wrong');
+            return next(new Error("Something went wrong"));
         }
         return handleSuccessResponse(res, 200, 'Logout successful');
     });

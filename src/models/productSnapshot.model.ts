@@ -5,7 +5,6 @@ import Order from './order.model';
 
 interface ProductSnapshot{
     id : number,
-    publicId : string,
     title : string,
     subtitle : string,
     price : number,

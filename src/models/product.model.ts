@@ -1,12 +1,14 @@
-import { Model, RelationMappings } from 'objection';
+import { Model, RelationMappings, QueryContext } from 'objection';
 import Category from './category.model';
 import Tag from './tag.model';
 import Image from './image.model';
 import User from './user.model';
 
+const slugify = require('slugify');
+import crypto from 'crypto';
 interface Product{
     id : number;
-    publicId : string;
+    slug : string;
     title : string;
     subtitle : string;
     content : string;
@@ -86,6 +88,27 @@ class Product extends Model implements Product{
                 }
             }
         };
+    }
+
+    async $beforeInsert(queryContext: QueryContext) {
+        await super.$beforeInsert(queryContext);
+        this.slug = await this.generateUniqueSlug();
+    }
+
+    async $beforeUpdate(opt: any, queryContext: QueryContext) {
+        await super.$beforeUpdate(opt, queryContext);
+        this.slug = await this.generateUniqueSlug();
+    }
+
+    private async generateUniqueSlug(): Promise<string> {
+        const baseSlug = slugify(`${this.title} ${this.subtitle}`, {
+            lower: true,
+            strict: true,
+            replacement: '-',
+        });
+
+        const hash = crypto.createHash('md5').update(`${this.title}-${this.subtitle}-${Date.now()}`).digest('hex').substring(0, 6)
+        return `${baseSlug}-${hash}`;
     }
 }
 

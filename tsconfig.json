@@ -8,9 +8,15 @@
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "baseUrl": "src"
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["*"]
+    }
   },
-  "include": ["src"],
+  "include": ["./src/**/*", "./src/**/*.json"],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
   "files":[
     "src/types/index.d.ts"
   ]

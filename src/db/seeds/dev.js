@@ -86,6 +86,7 @@ exports.seed = async function (knex) {
       price : 20.99,
       isInStock : true,
       category_id : 1,
+      slug : 'product'
 
     },
     {
@@ -95,6 +96,7 @@ exports.seed = async function (knex) {
       price : 129.99,
       isInStock : true,
       category_id : 1,
+      slug : 'expensive-product'
 
     },
     {
@@ -104,6 +106,7 @@ exports.seed = async function (knex) {
       price : 299.99,
       isInStock : true,
       category_id : 1,
+      slug : 'one-more-expensive-product'
 
 
     },

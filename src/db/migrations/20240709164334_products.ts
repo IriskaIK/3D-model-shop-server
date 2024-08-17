@@ -9,22 +9,20 @@ export async function up(knex : Knex): Promise<void> {
     });
     await knex.schema.createTable('category', (table) => {
         table.increments('id')
-        table.uuid('publicId').defaultTo(knex.fn.uuid()) // TODO: change to slug
         table.string('title').notNullable()
         table.string('content').notNullable()
-        table.integer('image_id').references('id').inTable('images')
+        table.integer('image_id').references('id').inTable('images').onDelete('SET NULL')
         table.timestamps(true, true)
     })
     await knex.schema.createTable('tags', (table) => {
         table.increments('id')
-        table.uuid('publicId').defaultTo(knex.fn.uuid()) // TODO: change to slug
         table.string('title').notNullable()
         table.timestamps(true, true)
     })
     await knex.schema.createTable('products', (table) => {
         table.increments('id')
 
-        table.uuid('publicId').defaultTo(knex.fn.uuid()) // TODO: change to slug
+        table.string('slug').unique()
         table.string('title').notNullable()
         table.string('subtitle').notNullable()
         table.string('content').notNullable()
@@ -32,19 +30,19 @@ export async function up(knex : Knex): Promise<void> {
         table.string('currency').defaultTo('USD')
         table.boolean('isInStock').defaultTo(true)
 
-        table.integer('category_id').references('id').inTable('category')
+        table.integer('category_id').references('id').inTable('category').onDelete('SET NULL')
 
         table.timestamps(true, true)
     })
     await knex.schema.createTable('tag_product', (table) => {
         table.increments('id')
-        table.integer('product_id').references('id').inTable('products')
-        table.integer('tag_id').references('id').inTable('tags')
+        table.integer('product_id').references('id').inTable('products').onDelete('CASCADE')
+        table.integer('tag_id').references('id').inTable('tags').onDelete('SET NULL')
     })
     await knex.schema.createTable('image_product', (table) => {
         table.increments('id')
-        table.integer('product_id').references('id').inTable('products')
-        table.integer('image_id').references('id').inTable('images')
+        table.integer('product_id').references('id').inTable('products').onDelete('CASCADE')
+        table.integer('image_id').references('id').inTable('images').onDelete('SET NULL')
     })
 }
 

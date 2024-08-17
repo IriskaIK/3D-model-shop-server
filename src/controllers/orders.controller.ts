@@ -5,14 +5,15 @@ import Product from '../models/product.model';
 import User from "../models/user.model";
 import Cart from "../models/cart.model";
 import {Request, Response, NextFunction} from "express";
-import {IOrderBodyRequest} from "../types/order/request.types";
+import {IOrderBodyRequest} from "@/types/order/request.types";
 import Order from "../models/order.model";
-import {handleSuccessResponse} from "../utils/responseUtils.util";
+import {handleSuccessResponse} from "@/utils/responseUtils.util";
+
+import {ValidationError, DatabaseError, NotFoundError, AuthorizationError} from "@/types/customError.types";
 
 export async function createOrder(req: Request<{}, {}, IOrderBodyRequest>, res: Response, next: NextFunction){
     if (!req.user) {
-        next(new Error("Unauthorized"));
-        return
+        return next(new AuthorizationError("Unauthorized"));
     }
     const userId = req.user.id;
     const {recipient, shipping_address} = req.body;
@@ -23,11 +24,10 @@ export async function createOrder(req: Request<{}, {}, IOrderBodyRequest>, res: 
             .select('first_name')
             .withGraphFetched('cart')
     }catch (e){
-        next(e);
+        return next(new DatabaseError("DB Error: Error during fetching products int cart"));
     }
     if(!productsInCart){
-        next(new Error("Cart is empty"));
-        return;
+        return next(new ValidationError("Cart is empty"));
     }
     const products = productsInCart.cart
 
@@ -59,7 +59,7 @@ export async function createOrder(req: Request<{}, {}, IOrderBodyRequest>, res: 
                 .andWhere('user_id', userId)
         }
     }catch (e) {
-        next(e)
+        next(new DatabaseError('DB Error: Error during orders insertion'))
     }
     handleSuccessResponse(res, 201, 'Created')
 }
@@ -67,8 +67,7 @@ export async function createOrder(req: Request<{}, {}, IOrderBodyRequest>, res: 
 
 export async function getOrders(req: Request, res : Response<Order[]>, next: NextFunction){
     if (!req.user) {
-        next(new Error("Unauthorized"));
-        return
+        return next(new AuthorizationError("Unauthorized"));
     }
     const userId = req.user.id;
     try {
@@ -80,7 +79,7 @@ export async function getOrders(req: Request, res : Response<Order[]>, next: Nex
             .withGraphFetched('shipping_address(shipping_addressSelectOptions)')
             .modifiers({
                 orderItemsSelectOptions(builder){
-                    builder.select('publicId', 'title', 'subtitle', 'price', 'currency')
+                    builder.select('slug', 'title', 'subtitle', 'price', 'currency', 'id')
                 },
                 recipientSelectOptions(builder){
                     builder.select('first_name', 'last_name', 'phone')
@@ -92,7 +91,7 @@ export async function getOrders(req: Request, res : Response<Order[]>, next: Nex
         res.send(orders)
 
     }catch (e){
-        next(e)
+        next(new DatabaseError('DB Error: Error during fetching orders'))
     }
 
 }

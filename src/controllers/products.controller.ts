@@ -1,11 +1,12 @@
 import {NextFunction, Response, Request} from "express";
-import {IManyProductsRequestBody, IProductsRequestParam} from "../types/products/request.types";
-import {IManyProductsResponse} from "../types/products/response.types";
+import {IManyProductsRequestBody, IProductsRequestParam} from "@/types/products/request.types";
+import {IManyProductsResponse} from "@/types/products/response.types";
 import Category from "../models/category.model";
 import Product from "../models/product.model";
 import Tag from "../models/tag.model";
-import {ProductsQueryBuilderService} from "../services/queryBuilder/productsQueryBuilder.service";
+import {ProductsQueryBuilderService} from "@/services/queryBuilder/productsQueryBuilder.service";
 
+import {ValidationError, DatabaseError, NotFoundError, AuthorizationError} from "@/types/customError.types";
 
 
 export async function getProducts(req : Request<{}, {}, IManyProductsRequestBody>, res : Response<IManyProductsResponse>, next: NextFunction){
@@ -21,30 +22,35 @@ export async function getProducts(req : Request<{}, {}, IManyProductsRequestBody
             offset : offset+20
         })
     }catch (e){
-        next(e)
+        next(new DatabaseError("DB Error: Error during fetching products."))
     }
 }
 export async function getProductByID(req : Request<IProductsRequestParam>, res : Response<Product>, next: NextFunction){
     const {id} = req.params
     const products = new ProductsQueryBuilderService({})
     try{
-        res.send(await products.getProductByPublicId(id))
+        const product = await Product.query().findById(id);
+
+        if (!product) {
+            return next(new ValidationError(`Product with id: ${id} not found.`))
+        }
+        res.send(await products.getProductById(id))
     }catch (e){
-        next(e)
+        next(new DatabaseError("DB Error: Error during fetching product."))
     }
 }
 
 export async function getTags(req : Request, res : Response<Tag[]>, next: NextFunction){
     try{
-        res.send( await Tag.query().select('publicId', 'title'))
+        res.send( await Tag.query().select('id', 'title'))
     }catch (e){
-        next(e)
+        next(new DatabaseError("DB Error: Error during fetching tags."))
     }
 }
 export async function getCategories(req : Request, res : Response<Category[]>, next: NextFunction){
     try{
         res.send( await Category.query()
-            .select('publicId', 'title', 'content')
+            .select('id', 'title', 'content')
             .withGraphFetched('images(imagesSelectOptions)')
             .modifiers({
                     imagesSelectOptions(builder){
@@ -53,6 +59,6 @@ export async function getCategories(req : Request, res : Response<Category[]>, n
                 }
             ))
     }catch (e){
-        next(e)
+        next(new DatabaseError("DB Error: Error during fetching categories."))
     }
 }
