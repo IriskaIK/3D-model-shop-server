@@ -9,7 +9,7 @@ export interface IManyProductsRequest {
         min : number;
         max : number;
     };
-    orderBy? : OrderByType;
+    orderBy? : OrderByType | undefined;
     title? : string | undefined;
 }
 

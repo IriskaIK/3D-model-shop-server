@@ -6,9 +6,9 @@ import { QueryBuilderBase } from "./queryBuilderBase";
 export class UserQueryBuilder extends QueryBuilderBase<User> {
     private _phoneNumber: string | undefined = undefined;
     private _email: string | undefined = undefined;
-    private _region: string | undefined = undefined;
-    private _city: string | undefined = undefined;
-    private _postOffice: string | undefined = undefined;
+    private _region: number | undefined = undefined;
+    private _city: number | undefined = undefined;
+    private _postOffice: number | undefined = undefined;
 
     constructor(queryParams: IManyUsersRequestBody) {
         super(User, queryParams);
@@ -51,13 +51,13 @@ export class UserQueryBuilder extends QueryBuilderBase<User> {
             this.query = this.query.withGraphJoined('shipping_address');
 
             if (this._city !== undefined) {
-                this.query = this.query.where('shipping_address.city', this._city);
+                this.query = this.query.where('shipping_address.city_id', this._city);
             }
             if (this._region !== undefined) {
-                this.query = this.query.where('shipping_address.region', this._region);
+                this.query = this.query.where('shipping_address.region_id', this._region);
             }
             if (this._postOffice !== undefined) {
-                this.query = this.query.where('shipping_address.postOffice', this._postOffice);
+                this.query = this.query.where('shipping_address.postOffice_id', this._postOffice);
             }
         }
     }
@@ -68,7 +68,7 @@ export class UserQueryBuilder extends QueryBuilderBase<User> {
                 .withGraphFetched('shipping_address')
                 .withGraphFetched('wishlist')
                 .withGraphFetched('cart')
-                .withGraphFetched('orders');
+                .withGraphFetched('orders.[recipient, recipient_address, orderItems]')
         } catch (error) {
             throw new Error("Error fetching user");
         }

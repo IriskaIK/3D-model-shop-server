@@ -7,8 +7,8 @@ const router: Router = express.Router();
 // router.use(isAuthenticated('admin'))
 router.post('/', getUsers);
 
-router.get('/user/:id', getUserByID)
+router.get('/:id', getUserByID)
 //
-router.delete('/user/remove/:id', deleteUserById)
+router.delete('/remove/:id', deleteUserById)
 
 export default router;

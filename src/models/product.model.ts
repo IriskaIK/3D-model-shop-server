@@ -111,5 +111,4 @@ class Product extends Model implements Product{
         return `${baseSlug}-${hash}`;
     }
 }
-
 export default Product;

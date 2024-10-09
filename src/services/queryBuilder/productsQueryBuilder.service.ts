@@ -23,6 +23,7 @@ export class ProductsQueryBuilderService extends QueryBuilderBase<Product>{
         super(Product, queryParams);
         this.tags = Tag.query();
         this.categories = Category.query();
+        this.setQueryParams(queryParams);
         this.setProductQueryParams(queryParams)
         this.query = this.query
             .withGraphFetched("category")
@@ -42,7 +43,7 @@ export class ProductsQueryBuilderService extends QueryBuilderBase<Product>{
                     builder.select("id", "path");
                 },
             })
-                .select("slug", "title", "subtitle", "content", "price", "isInStock", "currency", "id")
+                .select("slug", "title", "subtitle", "content", "price", "isInStock", "id")
 
         }else{
             this.query = this.query
@@ -72,6 +73,9 @@ export class ProductsQueryBuilderService extends QueryBuilderBase<Product>{
         if (queryParams.category !== undefined) {
             this._categoriesIds = queryParams.category;
         }
+        if(queryParams.orderBy !== undefined){
+            this._orderBy = queryParams.orderBy;
+        }
     }
 
     private filterProductsByOrder() {
@@ -83,7 +87,7 @@ export class ProductsQueryBuilderService extends QueryBuilderBase<Product>{
                 this.setOrderBy('asc', 'price')
                 break;
             case "name":
-                this.setOrderBy('asc', 'name');
+                this.setOrderBy('asc', 'title');
                 break;
             case "date":
                 this.setOrderBy('desc', 'updated_at');
@@ -130,12 +134,11 @@ export class ProductsQueryBuilderService extends QueryBuilderBase<Product>{
     }
 
     protected async applyFilters(){
+        this.filterProductsByStock();
+        this.filterProductsByOrder();
         super.applyFilters();
-        this.filterProductsByStock();
-        this.filterProductsByOrder();
         if ((this._maxPrice !== 0 || this._minPrice !==0)){
             this.filterByPrice();
-            console.log(1)
         }
         try {
             if (this._tagsIds && this._tagsIds.length > 0) {
@@ -148,32 +151,6 @@ export class ProductsQueryBuilderService extends QueryBuilderBase<Product>{
             throw new Error("Error fetching products");
         }
 
-    }
-
-    async getProducts() {
-        this.filterProductsByStock();
-        this.filterProductsByOrder();
-        if ((this._maxPrice !== 0 || this._minPrice !==0)){
-            this.filterByPrice();
-            console.log(1)
-        }
-
-        try {
-            if (this._tagsIds && this._tagsIds.length > 0) {
-                await this.filterProductsByTags();
-            }
-            if (this._categoriesIds && this._categoriesIds.length > 0) {
-                await this.filterProductsByCategory();
-            }
-        } catch (e) {
-            throw new Error("Error fetching products");
-        }
-
-        try {
-            return await this.query;
-        } catch (error) {
-            throw new Error("Error fetching products");
-        }
     }
     async getProductById(id: number) {
         try {

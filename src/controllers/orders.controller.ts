@@ -10,62 +10,78 @@ import Order from "../models/order.model";
 import {handleSuccessResponse} from "@/utils/responseUtils.util";
 
 import {ValidationError, DatabaseError, NotFoundError, AuthorizationError} from "@/types/customError.types";
+import productSnapshotModel from "../models/productSnapshot.model";
 
-export async function createOrder(req: Request<{}, {}, IOrderBodyRequest>, res: Response, next: NextFunction){
+export async function createOrder(req: Request<{}, {}, IOrderBodyRequest>, res: Response, next: NextFunction) {
+
     if (!req.user) {
         return next(new AuthorizationError("Unauthorized"));
     }
     const userId = req.user.id;
     const {recipient, shipping_address} = req.body;
-    let productsInCart: User | undefined;
+    let productsInCart: Cart[];
     try {
-        productsInCart = await User.query()
-            .findOne('id', '=', userId)
-            .select('first_name')
-            .withGraphFetched('cart')
-    }catch (e){
+        productsInCart = await Cart.query()
+            .where('user_id', userId)
+            .select('quantity')
+            .withGraphFetched('product')
+
+
+    } catch (e) {
         return next(new DatabaseError("DB Error: Error during fetching products int cart"));
     }
-    if(!productsInCart){
+    if (!productsInCart) {
         return next(new ValidationError("Cart is empty"));
     }
-    const products = productsInCart.cart
 
-    let productSnapShotData : Partial<ProductSnapshot>[] = []
-    for(let index = 0; index < products.length; index++){
-        productSnapShotData.push({
-            title : products[index].title,
-            subtitle : products[index].subtitle,
-            price : products[index].price,
-            currency : products[index].currency,
-            product_id : products[index].id
+    let productSnapShotData: Partial<ProductSnapshot>[] = []
+    let productQuantityMap = new Map<number, number>();
+    let totalPrice = 0;
+
+    for (let index = 0; index < productsInCart.length; index++) {
+        productSnapShotData.push(
+                {
+                    title: productsInCart[index].product.title,
+                    subtitle: productsInCart[index].product.subtitle,
+                    price: productsInCart[index].product.price,
+                    product_id: productsInCart[index].product.id
+                }
+        )
+        productQuantityMap.set(productsInCart[index].product.id, productsInCart[index].quantity)
+        totalPrice += productsInCart[index].product.price*productsInCart[index].quantity
+    }
+
+
+    try {
+        const order = await Order.query().insertGraphAndFetch({
+            recipient_address : shipping_address,
+            recipient : recipient,
+            user_id : userId,
+            total_price : totalPrice
+        }).select('id')
+
+        const productSnapShots = await ProductSnapshot.query().insertGraphAndFetch(productSnapShotData)
+
+        productSnapShots.map(async (item)=>{
+            await OrderItem.query().insertGraphAndFetch({
+                order_id : order.id,
+                product_id : item.id,
+                quantity : productQuantityMap.get(item.product_id)
+            })
         })
-    }
 
-    let orderData : Partial<Order> = {
-        recipient : recipient,
-        shipping_address : shipping_address,
-        status : 'in progress',
-        user_id : userId,
-        orderItems : productSnapShotData
-    }
+        await Cart.query().delete().where('user_id', userId)
 
-    try{
-        await Orders.query().insertGraph(orderData)
-        for(let i = 0; i< products.length; i++){
-            await Cart.query()
-                .delete()
-                .where('product_id', products[i].id)
-                .andWhere('user_id', userId)
-        }
-    }catch (e) {
+
+    } catch (e) {
+        console.log(e)
         next(new DatabaseError('DB Error: Error during orders insertion'))
     }
     handleSuccessResponse(res, 201, 'Created')
 }
 
 
-export async function getOrders(req: Request, res : Response<Order[]>, next: NextFunction){
+export async function getOrders(req: Request, res: Response<Order[]>, next: NextFunction) {
     if (!req.user) {
         return next(new AuthorizationError("Unauthorized"));
     }
@@ -73,24 +89,28 @@ export async function getOrders(req: Request, res : Response<Order[]>, next: Nex
     try {
         const orders = await Orders.query()
             .where('user_id', '=', userId)
-            .select('status', 'created_at', 'updated_at')
-            .withGraphFetched('orderItems(orderItemsSelectOptions)')
-            .withGraphFetched('recipient(recipientSelectOptions)')
-            .withGraphFetched('shipping_address(shipping_addressSelectOptions)')
-            .modifiers({
-                orderItemsSelectOptions(builder){
-                    builder.select('slug', 'title', 'subtitle', 'price', 'currency', 'id')
-                },
-                recipientSelectOptions(builder){
-                    builder.select('first_name', 'last_name', 'phone')
-                },
-                shipping_addressSelectOptions(builder){
-                    builder.select('region', 'city', 'postOffice')
-                }
+            .select('status', 'created_at', 'updated_at', 'total_price', 'delivery_price')
+            .withGraphFetched('[orderItems, recipient, recipient_address.[city, region, postOffice]]')
+            .modifyGraph('recipient', (builder)=>{
+                builder.select('id', 'first_name', 'last_name', 'phone')
             })
+            .modifyGraph('recipient_address', (builder) => {
+                builder.select('id', 'address'); // Fetch specific fields
+            })
+            .modifyGraph('recipient_address.city', (builder) => {
+                builder.select('name'); // Only select the 'name' field
+            })
+            .modifyGraph('recipient_address.region', (builder) => {
+                builder.select('name'); // Only select the 'name' field
+            })
+            .modifyGraph('recipient_address.postOffice', (builder) => {
+                builder.select('address as name'); // Select 'address' but return it as 'name' for consistency
+            })
+
         res.send(orders)
 
-    }catch (e){
+    } catch (e) {
+        console.log(e)
         next(new DatabaseError('DB Error: Error during fetching orders'))
     }
 

@@ -8,7 +8,6 @@ interface ProductSnapshot{
     title : string,
     subtitle : string,
     price : number,
-    currency : string,
     product_id: number
 }
 

@@ -38,24 +38,19 @@ export async function getProductsInCart(req: Request, res: Response<Product[]>, 
     }
     const userId = req.user.id;
     try {
+
         const productsInCart = await User.query()
             .findOne('id', '=', userId)
             .withGraphFetched('cart(cartSelectOptions)')
             .modifiers({
                     cartSelectOptions(builder) {
-                        builder.select('slug', 'title', 'subtitle', 'content', 'price', 'currency', 'isInStock', 'id')
+                        builder.select('slug', 'title', 'subtitle', 'content', 'price', 'isInStock', 'cart.product_id as cart_product_id', 'cart.quantity')
                             .withGraphFetched('category(categorySelectOptions)')
                             .withGraphFetched('images(imagesSelectOptions)')
                             .modifiers(
                                 {
                                     categorySelectOptions(builder) {
                                         builder.select('id', 'title', 'content')
-                                            .withGraphFetched('images(imagesSelectOptions)')
-                                            .modifiers({
-                                                imagesSelectOptions(builder) {
-                                                    builder.select('filename', 'path')
-                                                }
-                                            })
                                     },
                                     imagesSelectOptions(builder) {
                                         builder.select('filename', 'path')
@@ -72,6 +67,7 @@ export async function getProductsInCart(req: Request, res: Response<Product[]>, 
             handleSuccessResponse(res, 200, "Cart is empty")
         }
     } catch (e) {
+        console.log(e)
         next(new DatabaseError("DB Error: Error during cart fetching"))
     }
 }
@@ -96,26 +92,6 @@ export async function removeProductFromCart(req: Request<IProductsRequestParam>,
     }
 }
 
-export async function getQuantityOfProductInCart(req: Request<IProductsRequestParam>, res: Response<Cart[]>, next: NextFunction) {
-    if (!req.user) {
-        return next(new AuthorizationError("Unauthorized"));
-
-    }
-    const userId = req.user.id;
-    const id = req.params.id;
-
-    try {
-        const quantity = await Cart.query()
-            .select('quantity')
-            .where('product_id', id)
-            .andWhere('user_id', userId)
-        res.status(200)
-        res.send(quantity)
-    } catch (e) {
-        next(new DatabaseError("DB Error: Error during fetching quantity of product in cart."))
-    }
-
-}
 
 export async function updateProductInCart(req : Request<{}, {}, IProductUpdateRequestBody>, res : Response, next : NextFunction){
     if (!req.user) {

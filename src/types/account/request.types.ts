@@ -6,7 +6,7 @@ export interface IAccountDetailsRequestBody {
     email: string;
 }
 export interface IDeliveryDetailsRequestBody {
-    region: string;
-    city: string;
-    postOffice: string;
+    region_id: number;
+    city_id: number;
+    postOffice_id: number;
 }

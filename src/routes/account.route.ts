@@ -5,23 +5,22 @@ import {
     getUserAccountDetails,
     updateAccountDetails,
     updateDeliveryDetails
-} from "../controllers/account.contoller";
-import {validateAccountDetails} from "../utils/validators/accountDetailsValidator.util";
-import {validateDeliveryDetails} from "../utils/validators/deliveryDetailsValidator.util";
+} from "@/controllers/account.contoller";
+import {validateAccountDetails} from "@/utils/validators/accountDetailsValidator.util";
+import {validateDeliveryDetails} from "@/utils/validators/deliveryDetailsValidator.util";
 import {
     addProductToCart,
     getProductsInCart,
-    getQuantityOfProductInCart,
     removeProductFromCart, updateProductInCart
-} from "../controllers/cart.controller";
+} from "@/controllers/cart.controller";
 import {
     addProductToWishList,
     getProductsInWishlist,
     removeProductFromWishlist
-} from "../controllers/wishlist.controller";
-import {createOrder, getOrders} from "../controllers/orders.controller";
-import {validateProductQuantity} from "../utils/validators/productQuantityValidator.util";
-import {validateOrder} from "../utils/validators/orderValidator.util";
+} from "@/controllers/wishlist.controller";
+import {createOrder, getOrders} from "@/controllers/orders.controller";
+import {validateProductQuantity} from "@/utils/validators/productQuantityValidator.util";
+import {validateOrder} from "@/utils/validators/orderValidator.util";
 
 const router: Router = express.Router();
 
@@ -34,17 +33,16 @@ router.get('/delivery', getDeliveryDetails)
 router.put('/delivery', validateDeliveryDetails, updateDeliveryDetails)
 
 
+router.get('/cart', getProductsInCart)
 router.get('/cart/add/:id', addProductToCart)
 router.put('/cart', validateProductQuantity, updateProductInCart)
-router.get('/cart/:id', getQuantityOfProductInCart)
-router.get('/cart', getProductsInCart)
 router.delete('/cart/:id', removeProductFromCart)
-
-router.get('/wishlist/:id', addProductToWishList)
+//
 router.get('/wishlist', getProductsInWishlist)
+router.get('/wishlist/:id', addProductToWishList)
 router.delete('/wishlist/:id', removeProductFromWishlist)
-
-router.post('/orders', validateOrder ,createOrder)
+//
+router.post('/orders', validateOrder,createOrder)
 router.get('/orders', getOrders)
 
 export default router;

@@ -27,7 +27,6 @@ export async function up(knex : Knex): Promise<void> {
         table.string('subtitle').notNullable()
         table.string('content').notNullable()
         table.float('price', 2).notNullable()
-        table.string('currency').defaultTo('USD')
         table.boolean('isInStock').defaultTo(true)
 
         table.integer('category_id').references('id').inTable('category').onDelete('SET NULL')

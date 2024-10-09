@@ -5,7 +5,7 @@ const router: Router = express.Router();
 
 router.post('/', getProducts);
 
-router.get('/product/:id', getProductByID)
+router.get('/:id', getProductByID)
 
 router.get('/tags', getTags)
 

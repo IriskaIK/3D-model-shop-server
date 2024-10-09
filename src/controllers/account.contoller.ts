@@ -3,22 +3,56 @@ import ShippingAddress from "../models/shippingAddress.model";
 import User from "../models/user.model";
 import {IAccountDetailsRequestBody, IDeliveryDetailsRequestBody} from "@/types/account/request.types";
 import {AuthorizationError, DatabaseError, NotFoundError} from "@/types/customError.types";
+import {handleSuccessResponse} from "@/utils/responseUtils.util";
 
 export async function getUserAccountDetails(req: Request, res: Response<User>, next: NextFunction) {
+
     if (req.user) {
         try {
             const user = await User.query()
                 .findById(req.user.id)
                 .select('email', 'first_name', 'last_name', 'phone')
-                .withGraphFetched('[avatar(avatarSelectOptions), shipping_address(addressSelectOptions)]')
+                    .withGraphFetched('[avatar(avatarSelectOptions), shipping_address.[city, region, postOffice]]')
+                .modifyGraph('shippingAddress', (builder) => {
+                    builder.select('id', 'full_address'); // Fetch specific fields
+                })
+                .modifyGraph('shippingAddress.city', (builder) => {
+                    builder.select('name'); // Only select the 'name' field
+                })
+                .modifyGraph('shippingAddress.region', (builder) => {
+                    builder.select('name'); // Only select the 'name' field
+                })
+                .modifyGraph('shippingAddress.postOffice', (builder) => {
+                    builder.select('address as name'); // Select 'address' but return it as 'name' for consistency
+                })
                 .modifiers({
                     avatarSelectOptions(builder) {
                         builder.select('filename', 'path');
                     },
-                    addressSelectOptions(builder) {
-                        builder.select('region', 'city', 'postOffice');
-                    },
                 });
+            //
+            //
+            // const test =  User.query()
+            //     .findById(req.user.id)
+            //     .select('email', 'first_name', 'last_name', 'phone')
+            //     .withGraphFetched('[avatar(avatarSelectOptions), shipping_address.[city, region, postOffice]]')
+            //     .modifyGraph('shippingAddress', (builder) => {
+            //         builder.select('id', 'full_address'); // Fetch specific fields
+            //     })
+            //     .modifyGraph('shippingAddress.city', (builder) => {
+            //         builder.select('name'); // Only select the 'name' field
+            //     })
+            //     .modifyGraph('shippingAddress.region', (builder) => {
+            //         builder.select('name'); // Only select the 'name' field
+            //     })
+            //     .modifyGraph('shippingAddress.postOffice', (builder) => {
+            //         builder.select('address as name'); // Select 'address' but return it as 'name' for consistency
+            //     })
+            //     .modifiers({
+            //         avatarSelectOptions(builder) {
+            //             builder.select('filename', 'path');
+            //         },
+            //     });
 
             if (user) {
                 res.send(user);
@@ -40,19 +74,28 @@ export async function updateAccountDetails(req: Request<{}, {}, IAccountDetailsR
             await User.query().patch({
                 first_name: req.body.firstName,
                 last_name: req.body.lastName,
-                phone: req.body.phoneNumber,
+                phone: req.body.phoneNumber.replace(/-/g, ''),
                 email: req.body.email,
             }).where('id', req.user.id);
             const user = await User.query()
                 .findById(req.user.id)
                 .select('email', 'first_name', 'last_name', 'phone')
-                .withGraphFetched('[avatar(avatarSelectOptions), shipping_address(addressSelectOptions)]')
+                .withGraphFetched('[avatar(avatarSelectOptions), shipping_address.[city, region, postOffice]]')
+                .modifyGraph('shippingAddress', (builder) => {
+                    builder.select('id', 'full_address'); // Fetch specific fields
+                })
+                .modifyGraph('shippingAddress.city', (builder) => {
+                    builder.select('name'); // Only select the 'name' field
+                })
+                .modifyGraph('shippingAddress.region', (builder) => {
+                    builder.select('name'); // Only select the 'name' field
+                })
+                .modifyGraph('shippingAddress.postOffice', (builder) => {
+                    builder.select('address as name'); // Select 'address' but return it as 'name' for consistency
+                })
                 .modifiers({
                     avatarSelectOptions(builder) {
                         builder.select('filename', 'path');
-                    },
-                    addressSelectOptions(builder) {
-                        builder.select('region', 'city', 'postOffice');
                     },
                 });
 
@@ -70,20 +113,23 @@ export async function updateDeliveryDetails(req: Request<{}, {}, IDeliveryDetail
     if (req.user) {
         try {
             const user = await User.query().findById(req.user.id)
+
             if (user) {
                 let shippingAddress = await ShippingAddress.query()
                     .findById(user.shippingAddress_id)
+
                 if (shippingAddress) {
-                    await shippingAddress.$query().patchAndFetch({
-                        region: req.body.region,
-                        city: req.body.city,
-                        postOffice: req.body.postOffice,
-                    })
+                    await ShippingAddress.query().patch({
+                        region_id: req.body.region_id,
+                        city_id: req.body.city_id,
+                        postOffice_id: req.body.postOffice_id,
+                    }).where('id', user.shippingAddress_id)
                 }
             } else {
                 next(new NotFoundError("User not found"));
             }
-            res.status(200)
+            handleSuccessResponse(res, 200, "Updated!")
+
 
         } catch (error) {
             next(new DatabaseError('DB Error: Error during fetching user data'))
@@ -102,6 +148,7 @@ export async function getDeliveryDetails(req: Request, res: Response<ShippingAdd
             if (user) {
                 let shippingAddress = await ShippingAddress.query()
                     .findById(user.shippingAddress_id)
+                    .withGraphFetched('[city, region, postOffice]')
                 if (shippingAddress) {
                     res.send(shippingAddress);
                 }

@@ -4,19 +4,24 @@ import ShippingAddress from './shippingAddress.model';
 import User from './user.model';
 import ProductSnapshot from './productSnapshot.model';
 import OrderItem from "./orderItem.model";
+import RecipientAddress from "@/models/recipientAddress.model";
+import OrderStatus from "@/models/orderStatus.model";
 
 interface Order{
     id : number,
     shippingAddress_id: number,
-    status : string,
+    status_id : number  ,
     recipient_id : number,
     created_at : string,
     updated_at : string,
     user_id : number,
-    shipping_address : Partial<ShippingAddress>,
-    recipient : Partial<Recipient>,
+    recipient_address : RecipientAddress,
+    recipient : Recipient,
     user : User,
-    orderItems : Partial<ProductSnapshot>[],
+    delivery_price : number,
+    total_price : number,
+    orderItems : ProductSnapshot[],
+    orderStatus : OrderStatus
 }
 
 
@@ -35,12 +40,12 @@ class Order extends Model implements Order{
                     to: 'recipient.id'
                 }
             },
-            shipping_address: {
+            recipient_address: {
                 relation: Model.BelongsToOneRelation,
-                modelClass: ShippingAddress,
+                modelClass: RecipientAddress,
                 join: {
-                    from: 'orders.shipping_address_id',
-                    to: 'shippingAddress.id'
+                    from: 'orders.recipient_address_id',
+                    to: 'recipient_address.id'
                 }
             },
             user: {
@@ -61,6 +66,14 @@ class Order extends Model implements Order{
                         to: 'order_items.product_id'
                     },
                     to: 'product_snapshot.id'
+                }
+            },
+            orderStatus : {
+                relation : Model.BelongsToOneRelation,
+                modelClass : OrderStatus,
+                join : {
+                    from : 'orders.status_id',
+                    to: 'order_status.id'
                 }
             }
         };

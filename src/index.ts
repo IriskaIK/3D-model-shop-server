@@ -54,9 +54,9 @@ app.use('/uploads', express.static(path.join(__dirname, './static/images')));
 app.use('/api/auth', authRotes)
 app.use('/api/products', productsRoutes)
 app.use('/api/account', accountRoutes)
-app.use('/api/admin/orders', ordersRoute)
 app.use('/api/admin/users', usersRoute)
 app.use('/api/admin/products', productsRoute)
+app.use('/api/admin/orders', ordersRoute)
 
 app.get('/', (req, res) => {
     res.send({'message': 'ok'})

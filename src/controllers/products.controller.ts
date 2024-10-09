@@ -18,7 +18,7 @@ export async function getProducts(req : Request<{}, {}, IManyProductsRequestBody
 
     try {
         res.json({
-            products : await products.getProducts(),
+            products : await products.execute(),
             offset : offset+20
         })
     }catch (e){
@@ -29,12 +29,12 @@ export async function getProductByID(req : Request<IProductsRequestParam>, res :
     const {id} = req.params
     const products = new ProductsQueryBuilderService({})
     try{
-        const product = await Product.query().findById(id);
+        const product = await products.getProductById(id);
 
         if (!product) {
             return next(new ValidationError(`Product with id: ${id} not found.`))
         }
-        res.send(await products.getProductById(id))
+        res.send(product)
     }catch (e){
         next(new DatabaseError("DB Error: Error during fetching product."))
     }

@@ -5,8 +5,8 @@ export interface IOrderBodyRequest{
         phone : string,
     },
     shipping_address : {
-        region : string,
-        city : string,
-        postOffice : string,
+        region_id : number,
+        city_id : number,
+        postOffice_id : number,
     }
 }

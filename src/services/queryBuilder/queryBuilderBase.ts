@@ -53,6 +53,7 @@ export class QueryBuilderBase<T extends Model>{
         if (this._id !== undefined) {
 
             this.query = this.query.where('id', this._id);
+            return;
         }
 
         this.query = this.query.offset(this._offset).limit(this._offsetLimit).orderBy(this._orderByColumn, this._orderByDirection);
