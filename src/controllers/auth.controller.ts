@@ -37,6 +37,7 @@ export async function regUser(req: Request<{}, {}, IRequestBody>, res: Response,
                 res.send({msg: "Created"});
             })
         } catch (e) {
+            console.log(e)
             next(new DatabaseError('DB Error: Error during creating user'));
         }
 

@@ -5,10 +5,10 @@ const router: Router = express.Router();
 
 router.post('/', getProducts);
 
-router.get('/:id', getProductByID)
-
 router.get('/tags', getTags)
 
 router.get('/categories', getCategories)
+
+router.get('/:id', getProductByID)
 
 export default router;

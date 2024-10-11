@@ -64,7 +64,7 @@ app.get('/', (req, res) => {
 
 
 
-// app.use(errorHandler)
+app.use(errorHandler)
 
 app.listen(credentials.port, () => {
     console.log(`listening of port: ${credentials.port}`)

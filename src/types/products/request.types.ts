@@ -14,4 +14,4 @@ export interface IProductsRequestParam{
 }
 
 
-export type OrderByType = "high price" | "low price" | "name" | "date";
+export type OrderByType = "High price" | "Low price" | "Name" | "Date";

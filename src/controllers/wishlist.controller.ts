@@ -36,7 +36,7 @@ export async function getProductsInWishlist(req : Request, res : Response<Produc
             .withGraphFetched('wishlist(wishlistSelectOptions)')
             .modifiers({
                     wishlistSelectOptions(builder){
-                        builder.select('slug','title', 'subtitle', 'content', 'price', 'isInStock', 'wishlist.id as product_id')
+                        builder.select('slug','title', 'subtitle', 'content', 'price', 'isInStock', 'wishlist.product_id as product_id')
                             .withGraphFetched('category(categorySelectOptions)')
                             .withGraphFetched('images(imagesSelectOptions)')
                             .modifiers(

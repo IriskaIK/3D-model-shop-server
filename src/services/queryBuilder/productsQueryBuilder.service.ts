@@ -13,7 +13,7 @@ export class ProductsQueryBuilderService extends QueryBuilderBase<Product>{
     private categories: QueryBuilder<Category>;
 
     private _isInStock: boolean = true;
-    private _orderBy: OrderByType = "high price";
+    private _orderBy: OrderByType = "High price";
     private _maxPrice: number = 0;
     private _minPrice: number = 0;
     private _tagsIds: number[] | null = [];
@@ -80,16 +80,16 @@ export class ProductsQueryBuilderService extends QueryBuilderBase<Product>{
 
     private filterProductsByOrder() {
         switch (this._orderBy) {
-            case "high price":
+            case "High price":
                 this.setOrderBy('desc', 'price')
                 break;
-            case "low price":
+            case "Low price":
                 this.setOrderBy('asc', 'price')
                 break;
-            case "name":
+            case "Name":
                 this.setOrderBy('asc', 'title');
                 break;
-            case "date":
+            case "Date":
                 this.setOrderBy('desc', 'updated_at');
                 break;
         }
