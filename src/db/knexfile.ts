@@ -12,7 +12,8 @@ const knexConfig: { [key: string]: Knex.Config } =  {
     connection: {
       database: credentials.database || '3dModelShopDB',
       user:     credentials.user || 'postgres',
-      password: credentials.password || '1234'
+      password: credentials.password || '8339',
+      host : 'pgdb'
     },
     pool: {
       min: 2,

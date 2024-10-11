@@ -30,7 +30,7 @@ export async function up(knex : Knex): Promise<void> {
 
 
         table.integer('user_id').references('id').inTable('users').onDelete('CASCADE')
-        table.integer('status_id').references('id').inTable('status')
+        table.integer('status_id').references('id').inTable('order_status')
         table.integer('recipient_address_id').references('id').inTable('recipient_address')
         table.integer('recipient_id').references('id').inTable('recipient')
 

@@ -1,0 +1,23 @@
+version: "3"
+services:
+  pgdb:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD : 8339
+      POSTGRES_USER : postgres
+      POSTGRES_DB : 3dModelShopDB
+  mongo:
+    image: mongo:4.4
+    volumes:
+      - mongo_data:/data/db
+  app:
+    image: 3d-model-shop-server
+    ports:
+      - "3000:3000"
+    depends_on:
+      - pgdb
+
+
+volumes:
+  postgres_data:
+  mongo_data:
