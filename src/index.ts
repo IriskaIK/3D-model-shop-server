@@ -18,6 +18,7 @@ import {errorHandler} from "./middleware/errorHandler.middleware";
 import usersRoute from "./routes/admin/users.route";
 import ordersRoute from "routes/admin/orders.route";
 import productsRoute from "routes/admin/products.route";
+import deliveryRoute from "@/routes/delivery.route";
 setupDB()
 
 const app = express()
@@ -57,12 +58,11 @@ app.use('/api/account', accountRoutes)
 app.use('/api/admin/users', usersRoute)
 app.use('/api/admin/products', productsRoute)
 app.use('/api/admin/orders', ordersRoute)
+app.use('/api/delivery', deliveryRoute)
 
 app.get('/', (req, res) => {
     res.send({'message': 'ok'})
 })
-
-
 
 app.use(errorHandler)
 

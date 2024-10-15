@@ -11,7 +11,7 @@ import {validateDeliveryDetails} from "@/utils/validators/deliveryDetailsValidat
 import {
     addProductToCart,
     getProductsInCart,
-    removeProductFromCart, updateProductInCart
+    removeProductFromCart, updateCartProductSelection, updateProductInCart
 } from "@/controllers/cart.controller";
 import {
     addProductToWishList,
@@ -36,6 +36,7 @@ router.put('/delivery', validateDeliveryDetails, updateDeliveryDetails)
 router.get('/cart', getProductsInCart)
 router.get('/cart/add/:id', addProductToCart)
 router.put('/cart', validateProductQuantity, updateProductInCart)
+router.put('/cart/selection', updateCartProductSelection)
 router.delete('/cart/:id', removeProductFromCart)
 //
 router.get('/wishlist', getProductsInWishlist)

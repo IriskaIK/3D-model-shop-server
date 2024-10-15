@@ -13,18 +13,18 @@ export async function getUserAccountDetails(req: Request, res: Response<User>, n
                 .findById(req.user.id)
                 .select('email', 'first_name', 'last_name', 'phone')
                     .withGraphFetched('[avatar(avatarSelectOptions), shipping_address.[city, region, postOffice]]')
-                .modifyGraph('shippingAddress', (builder) => {
-                    builder.select('id', 'full_address'); // Fetch specific fields
-                })
-                .modifyGraph('shippingAddress.city', (builder) => {
-                    builder.select('name'); // Only select the 'name' field
-                })
-                .modifyGraph('shippingAddress.region', (builder) => {
-                    builder.select('name'); // Only select the 'name' field
-                })
-                .modifyGraph('shippingAddress.postOffice', (builder) => {
-                    builder.select('address as name'); // Select 'address' but return it as 'name' for consistency
-                })
+                // .modifyGraph('shippingAddress', (builder) => {
+                //     builder.select('id', 'full_address'); // Fetch specific fields
+                // })
+                // .modifyGraph('shippingAddress.city', (builder) => {
+                //     builder.select('name'); // Only select the 'name' field
+                // })
+                // .modifyGraph('shippingAddress.region', (builder) => {
+                //     builder.select('name'); // Only select the 'name' field
+                // })
+                // .modifyGraph('shippingAddress.postOffice', (builder) => {
+                //     builder.select('address as name'); // Select 'address' but return it as 'name' for consistency
+                // })
                 .modifiers({
                     avatarSelectOptions(builder) {
                         builder.select('filename', 'path');

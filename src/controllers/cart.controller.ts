@@ -2,7 +2,7 @@ import Product from '../models/product.model'
 import Cart from '../models/cart.model'
 import User from '../models/user.model'
 import {NextFunction, Response, Request} from "express";
-import {IProductUpdateRequestBody} from "@/types/cart/request.types";
+import {IProductUpdateRequestBody, IProductUpdateSelectionRequestBody} from "@/types/cart/request.types";
 import {IProductsRequestParam} from "@/types/products/request.types"
 import {handleSuccessResponse} from "@/utils/responseUtils.util";
 import {ValidationError, DatabaseError, NotFoundError, AuthorizationError} from "@/types/customError.types";
@@ -25,6 +25,7 @@ export async function addProductToCart(req: Request<IProductsRequestParam>, res:
             product_id: id,
             user_id: userId,
             quantity: 1,
+            selected : true
         });
         handleSuccessResponse(res, 201, 'Product added successfully.')
     } catch (e) {
@@ -44,7 +45,7 @@ export async function getProductsInCart(req: Request, res: Response<Product[]>, 
             .withGraphFetched('cart(cartSelectOptions)')
             .modifiers({
                     cartSelectOptions(builder) {
-                        builder.select('slug', 'title', 'subtitle', 'content', 'price', 'isInStock', 'cart.product_id as cart_product_id', 'cart.quantity')
+                        builder.select('slug', 'title', 'subtitle', 'content', 'price', 'isInStock', 'cart.product_id as cart_product_id', 'cart.quantity', 'cart.selected')
                             .withGraphFetched('category(categorySelectOptions)')
                             .withGraphFetched('images(imagesSelectOptions)')
                             .modifiers(
@@ -112,3 +113,20 @@ export async function updateProductInCart(req : Request<{}, {}, IProductUpdateRe
 
 }
 
+export async function updateCartProductSelection(req: Request<{}, {}, IProductUpdateSelectionRequestBody>, res: Response, next: NextFunction){
+    if (!req.user) {
+        return next(new AuthorizationError("Unauthorized"));
+    }
+    const userId = req.user.id;
+    const {id, selected} = req.body
+
+    try {
+        await Cart.query()
+            .patch({selected : selected})
+            .where('product_id', id)
+            .andWhere('user_id', userId)
+        res.status(200).send({msg:'Product in cart successfully updated.'})
+    }catch (e){
+        next(new DatabaseError("DB Error: Error during updating quantity of product in cart."))
+    }
+}

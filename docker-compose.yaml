@@ -3,7 +3,7 @@ services:
   pgdb:
     image: postgres
     environment:
-      POSTGRES_PASSWORD : 8339
+      POSTGRES_PASSWORD : 1234
       POSTGRES_USER : postgres
       POSTGRES_DB : 3dModelShopDB
   mongo:

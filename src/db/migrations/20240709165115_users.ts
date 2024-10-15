@@ -51,8 +51,15 @@ export async function up(knex : Knex): Promise<void> {
         table.integer('product_id').references('id').inTable('products')
         table.integer('user_id').references('id').inTable('users').onDelete('CASCADE')
         table.integer('quantity')
+        table.boolean('selected')
     })
 }
+
+
+
+
+
+
 
 export async function down(knex: Knex) : Promise<void> {
     await knex.schema.dropTable('wishlist');

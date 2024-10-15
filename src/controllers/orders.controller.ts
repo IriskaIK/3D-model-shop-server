@@ -11,6 +11,7 @@ import {handleSuccessResponse} from "@/utils/responseUtils.util";
 
 import {ValidationError, DatabaseError, NotFoundError, AuthorizationError} from "@/types/customError.types";
 import productSnapshotModel from "../models/productSnapshot.model";
+import OrderStatus from "@/models/orderStatus.model";
 
 export async function createOrder(req: Request<{}, {}, IOrderBodyRequest>, res: Response, next: NextFunction) {
 
@@ -23,6 +24,7 @@ export async function createOrder(req: Request<{}, {}, IOrderBodyRequest>, res: 
     try {
         productsInCart = await Cart.query()
             .where('user_id', userId)
+            .andWhere('selected', true)
             .select('quantity')
             .withGraphFetched('product')
 
@@ -57,7 +59,10 @@ export async function createOrder(req: Request<{}, {}, IOrderBodyRequest>, res: 
             recipient_address : shipping_address,
             recipient : recipient,
             user_id : userId,
-            total_price : totalPrice
+            total_price : totalPrice,
+            orderStatus : {
+                status : "In progress"
+            }
         }).select('id')
 
         const productSnapShots = await ProductSnapshot.query().insertGraphAndFetch(productSnapShotData)
@@ -70,7 +75,7 @@ export async function createOrder(req: Request<{}, {}, IOrderBodyRequest>, res: 
             })
         })
 
-        await Cart.query().delete().where('user_id', userId)
+        await Cart.query().delete().where('user_id', userId).andWhere('selected', true)
 
 
     } catch (e) {
@@ -89,8 +94,11 @@ export async function getOrders(req: Request, res: Response<Order[]>, next: Next
     try {
         const orders = await Orders.query()
             .where('user_id', '=', userId)
-            .select('status', 'created_at', 'updated_at', 'total_price', 'delivery_price')
-            .withGraphFetched('[orderItems, recipient, recipient_address.[city, region, postOffice]]')
+            .select('created_at', 'updated_at', 'total_price', 'delivery_price')
+            .withGraphFetched('[orderItems, recipient, orderStatus, recipient_address.[city, region, postOffice]]')
+            .modifyGraph('orderItems', (builder) => {
+                builder.select('order_items.quantity', 'order_items.id as order_item_id', 'title', 'subtitle', 'price', 'product_snapshot.product_id as prod_id')
+            })
             .modifyGraph('recipient', (builder)=>{
                 builder.select('id', 'first_name', 'last_name', 'phone')
             })

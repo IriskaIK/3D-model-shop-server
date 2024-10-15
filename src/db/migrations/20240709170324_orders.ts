@@ -52,10 +52,10 @@ export async function up(knex : Knex): Promise<void> {
 }
 
 export async function down(knex: Knex) : Promise<void> {
-
     await knex.schema.dropTable('order_items');
     await knex.schema.dropTable('product_snapshot');
     await knex.schema.dropTable('orders');
     await knex.schema.dropTable('recipient');
     await knex.schema.dropTable('recipient_address')
+    await knex.schema.dropTable('order_status')
 }
